@@ -9,7 +9,7 @@ import java.util.List;
 public class FolderService {
 
     public List<Folder> fetchDefaultFolders(String userId) {
-        return Arrays.asList(
+        return List.of(
                 new Folder(userId, "Inbox", "blue"),
                 new Folder(userId, "Sent", "green"),
                 new Folder(userId, "Important", "green")
