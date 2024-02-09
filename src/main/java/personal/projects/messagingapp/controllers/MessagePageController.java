@@ -49,7 +49,7 @@ public class MessagePageController {
         if (messageOptional.isEmpty())
             return "landing-page";
         Message message = messageOptional.get();
-        String toIds = String.join(",", message.getTo());
+        String toIds = String.join(", ", message.getTo());
         model.addAttribute("message", message);
         model.addAttribute("toIds", toIds);
 

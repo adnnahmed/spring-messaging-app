@@ -10,7 +10,6 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import personal.projects.messagingapp.folder.Folder;
 import personal.projects.messagingapp.folder.FolderRepository;
 import personal.projects.messagingapp.folder.FolderService;
@@ -22,14 +21,14 @@ import java.util.List;
 import java.util.UUID;
 
 @Controller
-public class InboxPageController {
+public class LandingPageController {
 
     private final FolderRepository folderRepository;
     private final FolderService folderService;
     private final MessageListItemRepository messageListItemRepository;
 
     @Lazy
-    public InboxPageController(FolderRepository folderRepository, FolderService folderService, MessageListItemRepository messageListItemRepository) {
+    public LandingPageController(FolderRepository folderRepository, FolderService folderService, MessageListItemRepository messageListItemRepository) {
         this.folderRepository = folderRepository;
         this.folderService = folderService;
         this.messageListItemRepository = messageListItemRepository;
