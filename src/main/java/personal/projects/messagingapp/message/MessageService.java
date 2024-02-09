@@ -3,6 +3,7 @@ package personal.projects.messagingapp.message;
 import com.datastax.oss.driver.api.core.uuid.Uuids;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import personal.projects.messagingapp.folder.UnreadMessageStatsRepository;
 import personal.projects.messagingapp.messagelist.MessageListItem;
 import personal.projects.messagingapp.messagelist.MessageListItemKey;
 import personal.projects.messagingapp.messagelist.MessageListItemRepository;
@@ -14,12 +15,14 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
     private final MessageListItemRepository messageListItemRepository;
+    private final UnreadMessageStatsRepository unreadMessageStatsRepository;
 
     @Autowired
     public MessageService(MessageRepository messageRepository,
-                          MessageListItemRepository messageListItemRepository) {
+                          MessageListItemRepository messageListItemRepository, UnreadMessageStatsRepository unreadMessageStatsRepository) {
         this.messageRepository = messageRepository;
         this.messageListItemRepository = messageListItemRepository;
+        this.unreadMessageStatsRepository = unreadMessageStatsRepository;
     }
 
     public void sendMessage(String from, List<String> to, String subject, String body) {
@@ -36,6 +39,7 @@ public class MessageService {
         to.forEach(toId -> {
             MessageListItem messageListItem = createMessageListItem(to, from, subject, toId, message);
             messageListItemRepository.save(messageListItem);
+            unreadMessageStatsRepository.incrementUnreadCount(toId, "Inbox");
         });
 
         MessageListItem sentMessageListItem = createMessageListItem(to, from, subject, from, message);

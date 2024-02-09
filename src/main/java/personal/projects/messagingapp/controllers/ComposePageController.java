@@ -47,6 +47,7 @@ public class ComposePageController {
         model.addAttribute("userFolders", userFolders);
         List<String> uniqueToIds = splitIds(to);
         model.addAttribute("toIds", String.join(", ", uniqueToIds));
+        model.addAttribute("unreadMessageStatsList", folderService.mapCountToLabels(userId));
 
         return "compose-page";
     }

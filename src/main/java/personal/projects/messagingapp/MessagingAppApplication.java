@@ -12,6 +12,7 @@ import personal.projects.messagingapp.folder.FolderRepository;
 import personal.projects.messagingapp.folder.UnreadMessageStatsRepository;
 import personal.projects.messagingapp.message.Message;
 import personal.projects.messagingapp.message.MessageRepository;
+import personal.projects.messagingapp.message.MessageService;
 import personal.projects.messagingapp.messagelist.MessageListItem;
 import personal.projects.messagingapp.messagelist.MessageListItemKey;
 import personal.projects.messagingapp.messagelist.MessageListItemRepository;
@@ -25,17 +26,15 @@ import java.util.List;
 public class MessagingAppApplication {
 
 	private final FolderRepository folderRepository;
-	private final MessageListItemRepository messageListItemRepository;
-	private final MessageRepository messageRepository;
-	private final UnreadMessageStatsRepository unreadMessageStatsRepository;
+    private final UnreadMessageStatsRepository unreadMessageStatsRepository;
+	private final MessageService messageService;
 
 	@Lazy
-	public MessagingAppApplication(FolderRepository folderRepository, MessageListItemRepository messageListItemRepository,
-								   MessageRepository messageRepository, UnreadMessageStatsRepository unreadMessageStatsRepository) {
+	public MessagingAppApplication(FolderRepository folderRepository, UnreadMessageStatsRepository unreadMessageStatsRepository,
+								   MessageService messageService) {
 		this.folderRepository = folderRepository;
-		this.messageListItemRepository = messageListItemRepository;
-		this.messageRepository = messageRepository;
-		this.unreadMessageStatsRepository = unreadMessageStatsRepository;
+        this.unreadMessageStatsRepository = unreadMessageStatsRepository;
+		this.messageService = messageService;
 	}
 
 	public static void main(String[] args) {
@@ -50,34 +49,11 @@ public class MessagingAppApplication {
 
 	@PostConstruct
 	public void init() {
-		folderRepository.save(new Folder("adnnahmed", "Inbox", "blue"));
-		folderRepository.save(new Folder("adnnahmed", "Sent", "green"));
-		folderRepository.save(new Folder("adnnahmed", "Important", "red"));
-
-		unreadMessageStatsRepository.incrementUnreadCount("adnnahmed", "Inbox");
+		folderRepository.save(new Folder("adnnahmed", "Work", "blue"));
+		folderRepository.save(new Folder("adnnahmed", "Personal", "green"));
 
 		for (int i = 0; i < 5; i++) {
-			MessageListItemKey key = new MessageListItemKey();
-			key.setId("adnnahmed");
-			key.setLabel("Inbox");
-			key.setTimeUUID(Uuids.timeBased());
-
-			MessageListItem messageListItem = new MessageListItem();
-			messageListItem.setKey(key);
-			messageListItem.setTo(List.of("adnnahmed-to", "abc", "def"));
-			messageListItem.setFrom("adnnahmed-from");
-			messageListItem.setSubject("Subject " + i);
-			messageListItem.setUnread(true);
-
-			messageListItemRepository.save(messageListItem);
-
-			Message message = new Message();
-			message.setId(key.getTimeUUID());
-			message.setFrom(messageListItem.getFrom());
-			message.setTo(messageListItem.getTo());
-			message.setSubject(messageListItem.getSubject());
-			message.setBody("Body " + i);
-			messageRepository.save(message);
+			messageService.sendMessage("adnnahmed", List.of("adnnahmed", "abc", "def"), "Subject " + i, "Body " + i);
 		}
 	}
 }

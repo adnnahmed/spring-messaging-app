@@ -17,7 +17,7 @@
                                justify-content-between
                                align-items-center" >
                         <a th:href="@{'/?folder=' + ${folder.label}}" th:text="${folder.label}"></a>
-                        <span class="badge bg-primary rounded-pill">14</span>
+                        <span class="badge bg-primary rounded-pill" th:text="${unreadMessageStatsList.get(folder.label)}"></span>
                     </li>
                 </ul>
             </div>

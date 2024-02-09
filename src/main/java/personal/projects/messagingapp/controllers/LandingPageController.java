@@ -10,15 +10,14 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import personal.projects.messagingapp.folder.Folder;
-import personal.projects.messagingapp.folder.FolderRepository;
-import personal.projects.messagingapp.folder.FolderService;
+import personal.projects.messagingapp.folder.*;
 import personal.projects.messagingapp.messagelist.MessageListItem;
 import personal.projects.messagingapp.messagelist.MessageListItemRepository;
 
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Controller
 public class LandingPageController {
@@ -46,6 +45,7 @@ public class LandingPageController {
         model.addAttribute("defaultFolders", defaultFolders);
         List<Folder> userFolders = folderRepository.findAllById(userId);
         model.addAttribute("userFolders", userFolders);
+        model.addAttribute("unreadMessageStatsList", folderService.mapCountToLabels(userId));
 
         //Fetch messages
         if(!StringUtils.hasText(folder))

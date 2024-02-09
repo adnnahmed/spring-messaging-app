@@ -44,6 +44,7 @@ public class MessagePageController {
         model.addAttribute("defaultFolders", defaultFolders);
         List<Folder> userFolders = folderRepository.findAllById(userId);
         model.addAttribute("userFolders", userFolders);
+        model.addAttribute("unreadMessageStatsList", folderService.mapCountToLabels(userId));
 
         Optional<Message> messageOptional = messageRepository.findById(id);
         if (messageOptional.isEmpty())
