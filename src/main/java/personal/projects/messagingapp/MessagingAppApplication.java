@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Lazy;
 import personal.projects.messagingapp.configurations.DataStaxAstraProperties;
 import personal.projects.messagingapp.folder.Folder;
 import personal.projects.messagingapp.folder.FolderRepository;
+import personal.projects.messagingapp.message.Message;
+import personal.projects.messagingapp.message.MessageRepository;
 import personal.projects.messagingapp.messagelist.MessageListItem;
 import personal.projects.messagingapp.messagelist.MessageListItemKey;
 import personal.projects.messagingapp.messagelist.MessageListItemRepository;
@@ -23,11 +25,14 @@ public class MessagingAppApplication {
 
 	private final FolderRepository folderRepository;
 	private final MessageListItemRepository messageListItemRepository;
+	private final MessageRepository messageRepository;
 
 	@Lazy
-	public MessagingAppApplication(FolderRepository folderRepository, MessageListItemRepository messageListItemRepository) {
+	public MessagingAppApplication(FolderRepository folderRepository, MessageListItemRepository messageListItemRepository,
+								   MessageRepository messageRepository) {
 		this.folderRepository = folderRepository;
 		this.messageListItemRepository = messageListItemRepository;
+		this.messageRepository = messageRepository;
 	}
 
 	public static void main(String[] args) {
@@ -59,6 +64,14 @@ public class MessagingAppApplication {
 			messageListItem.setUnread(true);
 
 			messageListItemRepository.save(messageListItem);
+
+			Message message = new Message();
+			message.setId(key.getTimeUUID());
+			message.setFrom("adnnahmed");
+			message.setTo(messageListItem.getTo());
+			message.setSubject(messageListItem.getSubject());
+			message.setBody("Body " + i);
+			messageRepository.save(message);
 		}
 	}
 }

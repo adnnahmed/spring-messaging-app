@@ -9,6 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import personal.projects.messagingapp.folder.Folder;
 import personal.projects.messagingapp.folder.FolderRepository;
 import personal.projects.messagingapp.folder.FolderService;
@@ -34,7 +36,7 @@ public class InboxPageController {
     }
 
     @GetMapping("/")
-    public String getHomePage(@AuthenticationPrincipal OAuth2User principal, Model model) {
+    public String getLandingPage(@RequestParam(required = false) String folder, @AuthenticationPrincipal OAuth2User principal, Model model) {
 
         if (principal == null || !StringUtils.hasText(principal.getAttribute("login")))
             return "index";
@@ -47,15 +49,18 @@ public class InboxPageController {
         model.addAttribute("userFolders", userFolders);
 
         //Fetch messages
-        String folderLabel = "Inbox";
-        List<MessageListItem> messageList = messageListItemRepository.findAllByKey_IdAndKey_Label(userId, folderLabel);
+        if(!StringUtils.hasText(folder))
+            folder = "Inbox";
+        List<MessageListItem> messageList = messageListItemRepository.findAllByKey_IdAndKey_Label(userId, folder);
         PrettyTime prettyTime = new PrettyTime();
-        messageList.stream().forEach(messageListItem -> {
+        messageList.forEach(messageListItem -> {
             UUID timeUUID = messageListItem.getKey().getTimeUUID();
             Date messageDateTime = new Date(Uuids.unixTimestamp(timeUUID));
             messageListItem.setAgoTimeString(prettyTime.format(messageDateTime));
         });
         model.addAttribute("messageList", messageList);
+        model.addAttribute("folderName", folder);
+
         return "landing-page";
     }
 }
