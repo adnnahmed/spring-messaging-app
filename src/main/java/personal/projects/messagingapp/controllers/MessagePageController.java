@@ -51,6 +51,8 @@ public class MessagePageController {
             return "index";
         String userId = principal.getAttribute("login");
 
+        model.addAttribute("userName", principal.getAttribute("name"));
+
         //Fetch folders
         List<Folder> defaultFolders = folderService.fetchDefaultFolders(userId);
         model.addAttribute("defaultFolders", defaultFolders);
@@ -63,6 +65,13 @@ public class MessagePageController {
 
         Message message = messageOptional.get();
         String toIds = String.join(", ", message.getTo());
+
+        // Check if user is allowed to view the message
+
+        if (!userId.equals(message.getFrom()) && !message.getTo().contains(userId)) {
+            return "redirect:/";
+        }
+
         model.addAttribute("message", message);
         model.addAttribute("toIds", toIds);
 
