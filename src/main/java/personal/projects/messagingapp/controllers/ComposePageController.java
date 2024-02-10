@@ -12,11 +12,11 @@ import org.springframework.web.servlet.ModelAndView;
 import personal.projects.messagingapp.folder.Folder;
 import personal.projects.messagingapp.folder.FolderRepository;
 import personal.projects.messagingapp.folder.FolderService;
+import personal.projects.messagingapp.message.Message;
+import personal.projects.messagingapp.message.MessageRepository;
 import personal.projects.messagingapp.message.MessageService;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -25,16 +25,20 @@ public class ComposePageController {
     private final FolderRepository folderRepository;
     private final FolderService folderService;
     private final MessageService messageService;
+    private final MessageRepository messageRepository;
 
     @Lazy
-    public ComposePageController(FolderRepository folderRepository, FolderService folderService, MessageService messageService) {
+    public ComposePageController(FolderRepository folderRepository, FolderService folderService, MessageService messageService,
+                                 MessageRepository messageRepository) {
         this.folderRepository = folderRepository;
         this.folderService = folderService;
         this.messageService = messageService;
+        this.messageRepository = messageRepository;
     }
 
     @GetMapping("/compose")
-    public String getComposePage(@RequestParam(required = false) String to, @AuthenticationPrincipal OAuth2User principal, Model model) {
+    public String getComposePage(@RequestParam(required = false) String to, @RequestParam(required = false) UUID id,
+                                 @AuthenticationPrincipal OAuth2User principal, Model model) {
 
         if (principal == null || !StringUtils.hasText(principal.getAttribute("login")))
             return "index";
@@ -50,6 +54,15 @@ public class ComposePageController {
         List<String> uniqueToIds = splitIds(to);
         model.addAttribute("toIds", String.join(", ", uniqueToIds));
         model.addAttribute("unreadMessageStatsList", folderService.mapCountToLabels(userId));
+
+        Optional<Message> messageOptional = messageRepository.findById(id);
+        if (messageOptional.isPresent()){
+            Message message = messageOptional.get();
+            if (messageService.doesHaveAccess(message, userId)) {
+                model.addAttribute("subject", messageService.getReplySubject(message.getSubject()));
+                model.addAttribute("body", messageService.getReplyBody(message));
+            }
+        }
 
         return "compose-page";
     }

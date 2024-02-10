@@ -48,6 +48,21 @@ public class MessageService {
         messageListItemRepository.save(sentMessageListItem);
     }
 
+    public boolean doesHaveAccess(Message message, String userId) {
+        return (userId.equals(message.getFrom()) || message.getTo().contains(userId));
+    }
+
+    public String getReplySubject(String subject) {
+        return "Re: " + subject;
+    }
+
+    public String getReplyBody(Message message) {
+        return "\n\n\n----------------------------------\n " +
+                "From: " + message.getFrom() + "\n" +
+                "To: " + message.getTo() + "\n\n" +
+                message.getBody();
+    }
+
     private static MessageListItem createMessageListItem(List<String> to, String from, String subject, String itemOwner, Message message) {
         MessageListItemKey key = new MessageListItemKey();
         key.setId(itemOwner);

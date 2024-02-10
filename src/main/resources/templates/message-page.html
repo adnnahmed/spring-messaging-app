@@ -42,6 +42,9 @@
         footer {
           grid-area: footer;
         }
+        .body-text {
+           white-space: pre-wrap;
+        }
     </style>
 </head>
 <body>
@@ -73,15 +76,15 @@
                     <dt>Subject</dt>
                     <dd th:text="${message.subject}"></dd>
                     <dt>Body</dt>
-                    <dd th:text="${message.body}"></dd>
+                    <dd class="body-text" th:text="${message.body}"></dd>
                 </dl>
                 <div>
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <a class="btn btn-primary me-md-2"
-                           th:href="@{'/compose?to=' + ${message.from}}"
+                           th:href="@{'/compose?to=' + ${message.from} + '&id=' + ${message.id}}"
                            type="button">Reply</a>
                         <a class="btn btn-primary"
-                           th:href="@{'/compose?to=' + ${toIds} + ', ' + ${message.from}}"
+                           th:href="@{'/compose?to=' + ${toIds} + ', ' + ${message.from} + '&id=' + ${message.id}}"
                            type="button">Reply All</a>
                     </div>
                 </div>

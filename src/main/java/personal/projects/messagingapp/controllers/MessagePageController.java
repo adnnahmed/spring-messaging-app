@@ -15,6 +15,7 @@ import personal.projects.messagingapp.folder.FolderService;
 import personal.projects.messagingapp.folder.UnreadMessageStatsRepository;
 import personal.projects.messagingapp.message.Message;
 import personal.projects.messagingapp.message.MessageRepository;
+import personal.projects.messagingapp.message.MessageService;
 import personal.projects.messagingapp.messagelist.MessageListItem;
 import personal.projects.messagingapp.messagelist.MessageListItemKey;
 import personal.projects.messagingapp.messagelist.MessageListItemRepository;
@@ -31,16 +32,18 @@ public class MessagePageController {
     private final MessageRepository messageRepository;
     private final MessageListItemRepository messageListItemRepository;
     private final UnreadMessageStatsRepository unreadMessageStatsRepository;
+    private final MessageService messageService;
 
     @Lazy
     public MessagePageController(FolderRepository folderRepository, FolderService folderService, MessageRepository messageRepository,
                                  MessageListItemRepository messageListItemRepository,
-                                 UnreadMessageStatsRepository unreadMessageStatsRepository) {
+                                 UnreadMessageStatsRepository unreadMessageStatsRepository, MessageService messageService) {
         this.folderRepository = folderRepository;
         this.folderService = folderService;
         this.messageRepository = messageRepository;
         this.messageListItemRepository = messageListItemRepository;
         this.unreadMessageStatsRepository = unreadMessageStatsRepository;
+        this.messageService = messageService;
     }
 
     @GetMapping("/messages/{id}")
@@ -66,11 +69,8 @@ public class MessagePageController {
         Message message = messageOptional.get();
         String toIds = String.join(", ", message.getTo());
 
-        // Check if user is allowed to view the message
-
-        if (!userId.equals(message.getFrom()) && !message.getTo().contains(userId)) {
+        if (!messageService.doesHaveAccess(message, userId))
             return "redirect:/";
-        }
 
         model.addAttribute("message", message);
         model.addAttribute("toIds", toIds);
